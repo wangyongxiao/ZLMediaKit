@@ -118,7 +118,15 @@ endif()
 # toolkit
 add_subdirectory(ZLToolKit)
 # 添加库别名
-add_library(ZLMediaKit::ToolKit ALIAS ZLToolKit)
+if (TARGET ZLToolKit)
+  add_library(ZLMediaKit::ToolKit ALIAS ZLToolKit)
+elseif (TARGET ZLToolKit_static)
+  add_library(ZLMediaKit::ToolKit ALIAS ZLToolKit_static)
+elseif (TARGET ZLToolKit_shared)
+  add_library(ZLMediaKit::ToolKit ALIAS ZLToolKit_shared)
+else ()
+  message(FATAL_ERROR "No usable ZLToolKit target found")
+endif ()
 # 添加依赖
 update_cached_list(MK_LINK_LIBRARIES ZLMediaKit::ToolKit)
 

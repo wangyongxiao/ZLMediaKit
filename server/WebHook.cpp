@@ -850,7 +850,6 @@ void installWebHook() {
         body["tcp_mode"] = tcp_mode;
         body["re_use_port"] = re_use_port;
         body["ssrc"] = ssrc;
-        body["user_data"] = user_data;
         do_http_hook(rtp_server_timeout, body);
     });
 

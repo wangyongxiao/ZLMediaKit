@@ -35,13 +35,13 @@ public:
         _tuple = std::move(tuple);
     }
 
-    void setRtpServerInfo(uint16_t local_port, RtpServer::TcpMode mode, bool re_use_port, uint32_t ssrc, int only_track, const char* user_data = "") {
+    void setRtpServerInfo(uint16_t local_port, RtpServer::TcpMode mode, bool re_use_port, uint32_t ssrc, int only_track) {
         _ssrc = ssrc;
         _process = RtpProcess::createProcess(_tuple);
         _process->setOnlyTrack((RtpProcess::OnlyTrack)only_track);
 
         _timeout_cb = [=]() mutable {
-            NOTICE_EMIT(BroadcastRtpServerTimeoutArgs, Broadcast::kBroadcastRtpServerTimeout, local_port, _tuple, (int)mode, re_use_port, ssrc, user_data);
+            NOTICE_EMIT(BroadcastRtpServerTimeoutArgs, Broadcast::kBroadcastRtpServerTimeout, local_port, _tuple, (int)mode, re_use_port, ssrc);
         };
 
         weak_ptr<RtcpHelper> weak_self = shared_from_this();
@@ -134,7 +134,7 @@ private:
     std::shared_ptr<struct sockaddr_storage> _rtcp_addr;
 };
 
-void RtpServer::start(uint16_t local_port, const char *local_ip, const MediaTuple &tuple, TcpMode tcp_mode, bool re_use_port, uint32_t ssrc, int only_track, const char* user_data, bool multiplex) {
+void RtpServer::start(uint16_t local_port, const char *local_ip, const MediaTuple &tuple, TcpMode tcp_mode, bool re_use_port, uint32_t ssrc, int only_track, bool multiplex) {
     //创建udp服务器
     auto poller = EventPollerPool::Instance().getPoller();
     Socket::Ptr rtp_socket = Socket::createSocket(poller, true);
@@ -171,7 +171,7 @@ void RtpServer::start(uint16_t local_port, const char *local_ip, const MediaTupl
         // If a stream ID is specified, then one port is one stream (regardless of whether it contains multiple streams with multiple SSRCs, after binding the RTP source, streams that do not match the IP port will be filtered out)
         helper = std::make_shared<RtcpHelper>(std::move(rtcp_socket), tuple);
         helper->startRtcp();
-        helper->setRtpServerInfo(local_port, tcp_mode, re_use_port, ssrc, only_track, user_data);
+        helper->setRtpServerInfo(local_port, tcp_mode, re_use_port, ssrc, only_track);
         bool bind_peer_addr = false;
         auto ssrc_ptr = std::make_shared<uint32_t>(ssrc);
         _ssrc = ssrc_ptr;
@@ -239,7 +239,6 @@ void RtpServer::start(uint16_t local_port, const char *local_ip, const MediaTupl
     _rtp_socket = rtp_socket;
     _rtcp_helper = helper;
     _tcp_mode = tcp_mode;
-    _user_data = user_data;
 }
 
 void RtpServer::setOnDetach(RtpProcess::onDetachCB cb) {
