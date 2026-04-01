@@ -162,6 +162,7 @@ private:
     float _speed = 0.0f;
     std::vector<SdpTrack::Ptr> _sdp_track;
     std::function<void(const Parser&)> _on_response;
+    std::function<void(const Parser&)> _on_keepalive_reponse;
  protected:   
     // RTP端口,trackid idx 为数组下标  [AUTO-TRANSLATED:77c186bb]
     // RTP port, trackid idx is the array subscript
@@ -184,9 +185,12 @@ protected:
     Rtsp::eRtpType _rtp_type = Rtsp::RTP_TCP;
 
 private:
+    // 起始时间戳
+    uint64_t _first_stamp[2] = {0, 0};
+
     // 当前rtp时间戳  [AUTO-TRANSLATED:410f2691]
     // Current rtp timestamp
-    uint32_t _stamp[2] = {0, 0};
+    uint64_t _stamp[2] = {0, 0};
 
     // 超时功能实现  [AUTO-TRANSLATED:1d603b3a]
     // Timeout function implementation
@@ -203,6 +207,8 @@ private:
     // 统计rtp并发送rtcp  [AUTO-TRANSLATED:0ac2b665]
     // Statistics rtp and send rtcp
     std::vector<RtcpContext::Ptr> _rtcp_context;
+    // 用户自定义rtsp头
+    StrCaseMap _custom_header;
 };
 
 } /* namespace mediakit */

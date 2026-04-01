@@ -161,7 +161,7 @@ string SdpTrack::toString(uint16_t port) const {
         }
         default: break;
     }
-    return std::move(_printer);
+    return _printer;
 }
 
 static TrackType toTrackType(const string &str) {
@@ -644,7 +644,7 @@ string RtpHeader::dumpString(size_t rtp_size) const {
     printer << "rtp size:" << rtp_size << "\r\n";
     printer << "payload offset:" << getPayloadOffset() << "\r\n";
     printer << "payload size:" << getPayloadSize(rtp_size) << "\r\n";
-    return std::move(printer);
+    return printer;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -745,7 +745,7 @@ TitleSdp::TitleSdp(float dur_sec, const std::map<std::string, std::string> &head
 }
 
 DefaultSdp::DefaultSdp(int payload_type, const Track &track)
-    : Sdp(track.getTrackType() == TrackVideo ? 9000 : static_cast<const AudioTrack &>(track).getAudioSampleRate(), payload_type) {
+    : Sdp(track.getTrackType() == TrackVideo ? 90000 : static_cast<const AudioTrack &>(track).getAudioSampleRate(), payload_type) {
     _printer << "m=" << track.getTrackTypeStr() << " 0 RTP/AVP " << payload_type << "\r\n";
     auto bitrate = track.getBitRate() >> 10;
     if (bitrate) {
